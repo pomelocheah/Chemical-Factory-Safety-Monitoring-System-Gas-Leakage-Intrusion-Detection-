@@ -27,4 +27,10 @@ This project implements an intelligent safety monitoring system for chemical wor
 - MQTT Broker (broker.emqx.io)
 - YOLO-Nano (edge AI model)
 
+## How to Setup?
+- Replace the default Wi-Fi SSID and password with your own network information.
+- Complete the MQTT broker configuration on your side.
+- This application is built to work with the HiveMQ MQTT broker. Please set the corresponding broker address, port and other related parameters as required.
+
+
 ## Repository Structure
