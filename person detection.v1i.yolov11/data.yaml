@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['1']
+
+roboflow:
+  workspace: yolo-project-ce03u
+  project: person-detection-vcwek
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/yolo-project-ce03u/person-detection-vcwek/dataset/1
