@@ -32,5 +32,42 @@ This project implements an intelligent safety monitoring system for chemical wor
 - Complete the MQTT broker configuration on your side.
 - This application is built to work with the HiveMQ MQTT broker. Please set the corresponding broker address, port and other related parameters as required.
 
+---
+
+## YOLO-Nano Object Detection Setup Guide
+This project explains how to set up and run YOLO-Nano for real-time object detection using PyTorch. YOLO-Nano is a lightweight deep learning model designed for edge devices and low-power systems while still maintaining good detection accuracy.
+
+## Project Overview
+YOLO-Nano is a compact object detection model optimized for:
+
+- Real-time detection
+- Low computational power devices (CPU / low-end GPU)
+- Embedded systems (e.g., Jetson Nano, laptops)
+
+It detects objects in images or video streams efficiently using a single forward pass.
+
+## Required Software and Downloads
+Before running YOLO-Nano, install the following:
+
+1. Python
+Download Python:
+https://www.python.org/downloads/
+** Make sure to check:
+✔ “Add Python to PATH”
+2. PyTorch (IMPORTANT)
+Install based on your system:
+CPU version:
+pip install torch torchvision torchaudio
+
+CUDA (GPU version):
+Use official selector:
+https://pytorch.org/get-started/locally/
+3. Install Dependencies
+pip install numpy opencv-python matplotlib pillow tqdm
+pip install pycocotools
+4. Run YOLO-Nano (Inference)
+Run detection on webcam:
+py Webcam.py
+py Webcam-Person.py
 
 ## Repository Structure
