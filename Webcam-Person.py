@@ -27,12 +27,13 @@ except:
 buzzer_on = False
 alert_triggered = False
 
-prev_time = 0
-
 ROI_X1, ROI_Y1 = 180, 100
 ROI_X2, ROI_Y2 = 470, 430
 
+cv2.namedWindow("YOLO Intrusion Detection", cv2.WINDOW_NORMAL)
+
 while True:
+
     ret, frame = cap.read()
     if not ret:
         break
@@ -40,10 +41,6 @@ while True:
     intrusion = False
 
     results = model(frame)
-
-    end_time = time.time()
-    latency = (end_time - start_time) * 1000
-    latencies.append(latency)
 
     cv2.rectangle(frame, (ROI_X1, ROI_Y1), (ROI_X2, ROI_Y2), (255, 255, 0), 2)
     cv2.putText(frame, "ROI Zone", (ROI_X1, ROI_Y1 - 10),
@@ -53,7 +50,7 @@ while True:
 
         cls = int(box.cls[0])
 
-        if cls == 0:  # person class
+        if cls == 0:  # person
 
             x1, y1, x2, y2 = map(int, box.xyxy[0])
 
@@ -65,11 +62,9 @@ while True:
                 color = (0, 0, 255)
 
                 if not alert_triggered:
-                    messagebox.showwarning(
-                        "WARNING",
-                        "Restricted Area Intrusion!"
-                    )
+                    messagebox.showwarning("WARNING", "Restricted Area Intrusion!")
                     alert_triggered = True
+
             else:
                 color = (0, 255, 0)
 
@@ -88,6 +83,11 @@ while True:
             print("✅ Buzzer OFF")
 
         alert_triggered = False
+
+    cv2.imshow("YOLO Intrusion Detection", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 if arduino:
     arduino.write(b'0')
