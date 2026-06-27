@@ -20,11 +20,11 @@ if not cap.isOpened():
 
 # Connect Arduino
 try:
-    arduino = serial.Serial('COM3', 9600, timeout=1)   # Change COM port if needed
+    arduino = serial.Serial('COM3', 9600, timeout=1)
     time.sleep(2)
     print("Arduino Connected")
-except Exception as e:
-    print("Arduino Not Connected:", e)
+except:
+    print("Arduino Not Connected (Skipping)")
     arduino = None
 
 ROI_X1 = 180
