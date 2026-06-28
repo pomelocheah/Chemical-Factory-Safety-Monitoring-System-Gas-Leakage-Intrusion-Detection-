@@ -58,7 +58,7 @@ https://www.python.org/downloads/
 2. PyTorch (IMPORTANT)
 Install based on your system:
 CPU version:
-pip install torch torchvision torchaudio
+pip install -r requirements.txt
 
 CUDA (GPU version):
 Use official selector:
