@@ -127,7 +127,7 @@ for i, val in enumerate(latencies):
 avg_latency = sum(latencies) / len(latencies)
 
 print("\n---------------------------------------------------")
-print(f"Average Local Inference Latency: {avg_latency:.2f} ms")
+print(f"Average Edge Inference Latency: {avg_latency:.2f} ms")
 print("---------------------------------------------------")
 
 messagebox.showinfo(
