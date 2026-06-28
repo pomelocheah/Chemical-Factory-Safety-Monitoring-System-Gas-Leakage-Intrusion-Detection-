@@ -64,11 +64,55 @@ CUDA (GPU version):
 Use official selector:
 https://pytorch.org/get-started/locally/
 3. Install Dependencies
-pip install numpy opencv-python matplotlib pillow tqdm
-pip install pycocotools
+pip install -r requirements.txt
+**Verify Installation
+
+Confirm that the required packages are installed successfully:
+python -c "import torch; print(torch.__version__)"
+python -c "import ultralytics; print('Ultralytics installed successfully')"
+
 4. Run YOLO-Nano (Inference)
 Run detection on webcam:
-py Webcam.py
 py Webcam-Person.py
+
+5. Run FPS-Calculate
+Run calculate FPS for the system :
+py FPS-Calculate.py
+
+6. Run detection accuracy
+Run to test the detection accuracy for dataset : 
+py detection-accuracy.py
+
+7. Edge Inference Latency Test
+Measure the latency of edge YOLO inference:
+py Latency-testing.py
+
+The program will:
+- Open the webcam
+- Perform 10 latency measurements
+- Display detected persons
+- Highlight the Restricted Area (ROI)
+- Generate an average latency report
+
+8. Cloud Inference Model
+Start the Flask server:
+py Cloud-Inference.py
+
+Open another terminal and run:
+py Cloud-client.py
+
+9. Cloud Inference Latency Test
+Start the Flask server:
+py Cloud-Inference.py
+
+Open another terminal and run:
+py Cloud-Latency.py
+
+The client will:
+-Capture webcam frames
+-Send frames to the server
+-Receive detection results
+-Measure latency over 10 trials
+-Display a latency summary
 
 ## Repository Structure
