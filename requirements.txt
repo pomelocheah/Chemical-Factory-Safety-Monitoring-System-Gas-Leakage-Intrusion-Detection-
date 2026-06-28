@@ -8,3 +8,4 @@ pycocotools
 requests
 flask
 pyserial
+paho-mqtt-2.1.0
