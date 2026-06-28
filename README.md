@@ -54,6 +54,7 @@ Download Python:
 https://www.python.org/downloads/
 ** Make sure to check:
 ✔ “Add Python to PATH”
+
 2. PyTorch (IMPORTANT)
 Install based on your system:
 CPU version:
