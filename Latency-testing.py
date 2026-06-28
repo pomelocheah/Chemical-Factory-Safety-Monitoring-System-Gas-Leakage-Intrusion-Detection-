@@ -34,6 +34,11 @@ latencies = []
 MAX_TRIALS = 10
 trial = 0
 
+last_trial_time = time.time()
+cooldown = 5
+
+last_results = None
+
 while True:
 
     ret, frame = cap.read()
@@ -41,56 +46,59 @@ while True:
         break
 
     intrusion = False
+    current_time = time.time()
 
+    results = None
+
+    # run only 10 trials
     if trial < MAX_TRIALS:
 
-        start_time = time.time()
+        if current_time - last_trial_time >= cooldown:
 
-        results = model(frame)
+            start_time = time.time()
+            results = model(frame)
+            end_time = time.time()
 
-        end_time = time.time()
+            latency = (end_time - start_time) * 1000
+            latencies.append(latency)
 
-        latency = (end_time - start_time) * 1000
-        latencies.append(latency)
+            trial += 1
+            last_trial_time = current_time
 
-        trial += 1
+            print(f"Trial {trial}: {latency:.2f} ms")
 
-        print(f"Trial {trial}: {latency:.2f} ms")
-
-    else:
-        break
-
+    # draw ROI
     cv2.rectangle(frame, (ROI_X1, ROI_Y1), (ROI_X2, ROI_Y2), (255, 255, 0), 2)
     cv2.putText(frame, "ROI Zone", (ROI_X1, ROI_Y1 - 10),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
 
-    for box in results[0].boxes:
+    # only process detections if available
+    if results is not None:
+        for box in results[0].boxes:
 
-        cls = int(box.cls[0])
+            cls = int(box.cls[0])
 
-        if cls == 0:
+            if cls == 0:
 
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
 
-            cx = (x1 + x2) // 2
-            cy = (y1 + y2) // 2
+                cx = (x1 + x2) // 2
+                cy = (y1 + y2) // 2
 
-            if ROI_X1 < cx < ROI_X2 and ROI_Y1 < cy < ROI_Y2:
-                intrusion = True
-                color = (0, 0, 255)
+                if ROI_X1 < cx < ROI_X2 and ROI_Y1 < cy < ROI_Y2:
+                    intrusion = True
+                    color = (0, 0, 255)
 
-                if not alert_triggered:
-                    messagebox.showwarning(
-                        "WARNING",
-                        "Restricted Area Intrusion!"
-                    )
-                    alert_triggered = True
-            else:
-                color = (0, 255, 0)
+                    if not alert_triggered:
+                        messagebox.showwarning("WARNING", "Restricted Area Intrusion!")
+                        alert_triggered = True
+                else:
+                    color = (0, 255, 0)
 
-            cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-            cv2.circle(frame, (cx, cy), 5, color, -1)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+                cv2.circle(frame, (cx, cy), 5, color, -1)
 
+    # Arduino control
     if intrusion:
         if arduino and not buzzer_on:
             arduino.write(b'1')
@@ -101,10 +109,14 @@ while True:
             buzzer_on = False
         alert_triggered = False
 
-    # Show frame
     cv2.imshow("Latency Test", frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+    # stop automatically after 10 trials
+    if trial >= MAX_TRIALS:
+        print("Completed 10 trials.")
         break
 
 print("\n================ TABLE 4.1 RESULTS ================\n")
