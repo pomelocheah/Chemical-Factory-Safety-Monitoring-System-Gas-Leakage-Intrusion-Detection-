@@ -1,118 +1,241 @@
-## Chemical-Factory-Safety-Monitoring-System-Gas-Leakage-Intrusion-Detection-
+# 🏭 Chemical Factory Safety Monitoring System
 
-
-## Project Overview
-This project implements an intelligent safety monitoring system for chemical workshops, focusing on flammable gas leakage detection and unauthorized human intrusion detection. The system uses ESP32 as the IoT sensing node and a laptop as the edge AI host.
-
-## Key Features
-- ESP32 developed with **Arduino IDE**
-- Multi-sensor monitoring: DHT11, MQ-2 gas sensor, HC-SR04 ultrasonic
-- I2C OLED display for real-time local data visualization
-- MQTT wireless communication for data transmission
-- Laptop built-in camera + YOLO-Nano for human intrusion detection
-- Dual intrusion detection (ultrasonic + vision)
-- Graded linkage alarm system
-
-## Hardware Components
-- ESP32-WROOM-32
-- DHT11 Temperature & Humidity Sensor
-- MQ-2 Combustible Gas Sensor
-- HC-SR04 Ultrasonic Sensor
-- 0.96" I2C OLED Display
-- Laptop (Built-in Webcam)
-
-## Software & Tools
-- **Arduino IDE** (for ESP32 firmware)
-- Python (for MQTT client & AI detection)
-- MQTT Broker (broker.emqx.io)
-- YOLO-Nano (edge AI model)
-
-## How to Setup?
-- Replace the default Wi-Fi SSID and password with your own network information.
-- Complete the MQTT broker configuration on your side.
-- This application is built to work with the HiveMQ MQTT broker. Please set the corresponding broker address, port and other related parameters as required.
+### Gas Leakage & Human Intrusion Detection using ESP32, MQTT and YOLO-Nano
 
 ---
 
-## YOLO-Nano Object Detection Setup Guide
-This project explains how to set up and run YOLO-Nano for real-time object detection using PyTorch. YOLO-Nano is a lightweight deep learning model designed for edge devices and low-power systems while still maintaining good detection accuracy.
+## 📖 Project Overview
 
-## Project Overview
-YOLO-Nano is a compact object detection model optimized for:
+This project presents an intelligent safety monitoring system designed for chemical factory workshops. The system continuously monitors combustible gas concentration, environmental conditions, and unauthorized human intrusion by combining IoT sensing with edge AI vision.
 
-- Real-time detection
-- Low computational power devices (CPU / low-end GPU)
-- Embedded systems (e.g., Jetson Nano, laptops)
+The ESP32 collects data from multiple sensors and publishes them through MQTT, while a laptop running YOLO-Nano performs real-time human detection using the built-in webcam. The system integrates sensor fusion and a graded alarm mechanism to improve industrial safety.
 
-It detects objects in images or video streams efficiently using a single forward pass.
+---
 
-## Required Software and Downloads
-Before running YOLO-Nano, install the following:
+## ✨ Features
 
-1. Python
-Download Python:
-https://www.python.org/downloads/
-** Make sure to check:
-✔ “Add Python to PATH”
+* 🌡 Real-time temperature and humidity monitoring (DHT11)
+* 🔥 Combustible gas leakage detection (MQ-2)
+* 📏 Ultrasonic distance sensing (HC-SR04)
+* 👤 AI-based human intrusion detection using YOLO-Nano
+* 📡 MQTT communication between ESP32 and AI edge device
+* 🖥 OLED real-time monitoring display
+* 🚨 Three-level warning system
 
-2. PyTorch (IMPORTANT)
-Install based on your system:
-CPU version:
+  * Safe (Green)
+  * Warning (Yellow)
+  * Danger (Red + Buzzer)
+* ⚡ Edge AI inference with low latency
+
+---
+
+# System Architecture
+
+```
+                +----------------------+
+                |    Laptop Webcam     |
+                +----------+-----------+
+                           |
+                           |
+                    YOLO-Nano Detection
+                           |
+                      Person = 0 / 1
+                           |
+                    MQTT (ai/person)
+                           |
+        ------------------------------------------
+                           |
+                    HiveMQ Broker
+                           |
+        ------------------------------------------
+                           |
+                        ESP32
+     +---------+----------+----------+
+     |         |          |          |
+    MQ-2      DHT11    HC-SR04    OLED
+     |         |          |          |
+     +---------+----------+----------+
+                           |
+                     Decision Logic
+                           |
+              Safe / Warning / Danger
+                           |
+                LEDs + Buzzer Alarm
+```
+
+---
+
+# Hardware Components
+
+| Component      | Purpose                |
+| -------------- | ---------------------- |
+| ESP32-WROOM-32 | Main controller        |
+| DHT11          | Temperature & Humidity |
+| MQ-2           | Gas leakage detection  |
+| HC-SR04        | Distance measurement   |
+| OLED Display   | Local monitoring       |
+| Active Buzzer  | Alarm                  |
+| LEDs           | Status indication      |
+| Laptop Webcam  | Human detection        |
+
+---
+
+# Software Stack
+
+| Software         | Usage                  |
+| ---------------- | ---------------------- |
+| Arduino IDE      | ESP32 firmware         |
+| Python           | AI & MQTT              |
+| OpenCV           | Webcam processing      |
+| Ultralytics YOLO | Human detection        |
+| MQTT             | Wireless communication |
+| HiveMQ Broker    | Message broker         |
+
+---
+
+# Detection Logic
+
+```
+Gas Normal
+        |
+        v
+Person?
+      /    \
+    No      Yes
+    |         |
+ SAFE      WARNING
+
+Gas Leak?
+      |
+      v
+Person?
+      /     \
+    No       Yes
+    |          |
+ WARNING    DANGER
+```
+
+---
+
+# Alarm Levels
+
+| Condition            | LED | Buzzer | Status  |
+| -------------------- | --- | ------ | ------- |
+| Normal               | 🟢  | Off    | Safe    |
+| Gas Leak Only        | 🟡  | On     | Warning |
+| Human Intrusion Only | 🟡  | On     | Warning |
+| Gas Leak + Intrusion | 🔴  | On     | Danger  |
+
+---
+
+# Repository Structure
+
+```
+Chemical-Factory-Safety-Monitoring-System/
+│
+├── Arduino/
+│   └── ESP32.ino
+│
+├── Python/
+│   ├── Webcam-Person.py
+│   ├── FPS-Calculate.py
+│   ├── Latency-testing.py
+│   ├── detection-accuracy.py
+│   ├── Cloud-Inference.py
+    ├── Connection-mqtt.py
+│   ├── Cloud-client.py
+│   └── Cloud-Latency.py
+│
+├── Models/
+│   └── yolo11n.pt
+    └── yolov8n.pt
+│
+├── Stage1.ino/
+│
+├── requirements.txt
+└── README.md
+
+```
+
+---
+
+# Installation
+
+## 1. Clone Repository
+
+```bash
+git clone https://github.com/yourname/Chemical-Factory-Safety-Monitoring-System.git
+cd Chemical-Factory-Safety-Monitoring-System
+```
+
+## 2. Install Python Packages
+
+```bash
 pip install -r requirements.txt
+```
 
-CUDA (GPU version):
-Use official selector:
-https://pytorch.org/get-started/locally/
-3. Install Dependencies
-pip install -r requirements.txt
-**Verify Installation
+## 3. Configure ESP32
 
-Confirm that the required packages are installed successfully:
-python -c "import torch; print(torch.__version__)"
-python -c "import ultralytics; print('Ultralytics installed successfully')"
+Update the following information inside the Arduino code:
 
-4. Run YOLO-Nano (Inference)
-Run detection on webcam:
+```cpp
+const char* ssid = "YOUR_WIFI";
+const char* password = "YOUR_PASSWORD";
+const char* mqtt_server = "broker.hivemq.com";
+```
+
+Upload the firmware using Arduino IDE.
+
+---
+
+# Running the System
+
+## Step 1
+
+Run the ESP32 firmware.
+
+## Step 2
+
+Start the YOLO detection and MQTT
+
+```
 py Webcam-Person.py
+py Connection-mqtt.py
+```
 
-5. Run FPS-Calculate
-Run calculate FPS for the system :
-py FPS-Calculate.py
+## Step 3
 
-6. Run detection accuracy
-Run to test the detection accuracy for dataset : 
-py detection-accuracy.py
+Observe:
 
-7. Edge Inference Latency Test
-Measure the latency of edge YOLO inference:
-py Latency-testing.py
+* OLED display
+* MQTT messages
+* LEDs
+* Alarm status
 
-The program will:
-- Open the webcam
-- Perform 10 latency measurements
-- Display detected persons
-- Highlight the Restricted Area (ROI)
-- Generate an average latency report
+---
 
-8. Cloud Inference Model
-Start the Flask server:
-py Cloud-Inference.py
+# Performance Evaluation
 
-Open another terminal and run:
-py Cloud-client.py
+The repository also includes:
 
-9. Cloud Inference Latency Test
-Start the Flask server:
-py Cloud-Inference.py
+* FPS measurement
+* Detection accuracy evaluation
+* Edge inference latency
+* Cloud inference latency comparison
 
-Open another terminal and run:
-py Cloud-Latency.py
+---
 
-The client will:
--Capture webcam frames
--Send frames to the server
--Receive detection results
--Measure latency over 10 trials
--Display a latency summary
+# Future Improvements
 
-## Repository Structure
+* ESP32-CAM integration
+* SMS / Telegram notification
+* Cloud dashboard
+* Historical database logging
+* Multi-camera monitoring
+* Mobile application
+
+---
+
+# License
+
+This project is developed for academic and research purposes.
