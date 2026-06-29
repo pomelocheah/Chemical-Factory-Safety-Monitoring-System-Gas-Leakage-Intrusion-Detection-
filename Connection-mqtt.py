@@ -4,6 +4,8 @@ import json
 BROKER = "broker.hivemq.com"
 PORT = 1883
 
+yoloPerson = 0
+
 # ===== CONNECT =====
 def on_connect(client, userdata, flags, reason_code, properties):
     print("Connected to HiveMQ!")
@@ -18,6 +20,20 @@ def on_message(client, userdata, msg):
     topic = msg.topic
     payload = msg.payload.decode()
 
+    print(f"Topic: {topic}")
+    print(f"Payload: {payload}")
+
+    if topic == "ai/person":
+        global yoloPerson
+
+        if payload == "1":
+            yoloPerson = 1
+        elif payload == "0":
+            yoloPerson = 0
+        else:
+            print("⚠️ Unknown YOLO payload:", payload)
+    print("YOLO Status:", yoloPerson)
+
     # ---------------- ESP32 sensor ----------------
     if topic == "esp32/sensor":
         try:
@@ -30,6 +46,8 @@ def on_message(client, userdata, msg):
             print("Gas:", data.get("gas", "N/A"))
             print("Distance:", data.get("dist", "N/A"))
             print("Status:", data.get("status", "N/A"))
+            # yoloPerson= data.get("yoloPerson", "N/A")
+            print("Person Detected:", yoloPerson)
 
         except:
             print("⚠️ Invalid sensor JSON:", payload)
